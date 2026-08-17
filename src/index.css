@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-auth-actions-in: auth-actions-in 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes auth-actions-in {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html, body {
+  min-height: 100%;
+  overflow: hidden;
+}
+
+/* Auth page tokens are scoped so the existing screens keep their current palette. */
+.auth-theme {
+  font-family: "Manrope", sans-serif;
+  --auth-card: #0b1020;
+  --auth-card-top: #464f7c;
+  --auth-text: #f7f8ff;
+  --auth-muted: #d9def6;
+  --auth-primary: #eef0ff;
+  --auth-primary-text: #18203d;
+  --auth-outline: #d9def7;
+  --auth-mountain-back: #475a99;
+  --auth-mountain-main: #344985;
+  --auth-mountain-shadow: #293c76;
+  --auth-forest: #172758;
+  --auth-snow: #8798d0;
+}
+
+.welcome-card {
+  --border-width: 2px;
+  --border-gradient: linear-gradient(135deg, rgba(183, 187, 181, 0.4), rgba(166, 170, 164, 0.45) 52%, rgba(160, 163, 159, 0.35));
+}
+
+.welcome-card::before {
+  position: absolute;
+  inset: 0;
+  padding: var(--border-width);
+  border-radius: inherit;
+  background: var(--border-gradient);
+  backdrop-filter: blur(10px) saturate(125%);
+  content: "";
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+
+.home-card {
+  --border-width: 1px;
+  --border-gradient: linear-gradient(135deg, rgba(153, 168, 149, 0.301), rgba(133, 139, 130, 0.205) 52%, rgba(140, 145, 139, 0.212));
+}
+
+.home-card::before {
+  position: absolute;
+  inset: 0;
+  padding: var(--border-width);
+  border-radius: inherit;
+  background: var(--border-gradient);
+  content: "";
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.scanner-camera {
+  background:
+    radial-gradient(circle at 28% 22%, rgb(110 135 213 / 35%), transparent 25%),
+    radial-gradient(circle at 76% 60%, rgb(83 103 180 / 45%), transparent 30%),
+    linear-gradient(135deg, #0b1230 0%, #25346a 48%, #0e1739 100%);
+}
+
+.app-theme {
+  --app-page: #0d1431;
+  --app-surface: #111a3c;
+  --app-surface-raised: #18234a;
+  --app-text: #f7f8ff;
+  --app-text-muted: #d9def6;
+  --app-text-subtle: #b9c5ee;
+  --app-accent: #eef0ff;
+  --app-accent-text: #18203d;
+  --app-border: #b7c5ff;
+  --app-scanner: #b8d4ff;
+  --app-success: #9cb8ff;
+  --auth-primary: var(--app-accent);
+  --auth-primary-text: var(--app-accent-text);
+}
+
+.scanner-theme {
+}
+
+.scanner-camera::after {
+  /* position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgb(201 214 255 / 6%) 1px, transparent 1px), linear-gradient(90deg, rgb(201 214 255 / 6%) 1px, transparent 1px);
+  background-size: 32px 32px;
+  content: ""; */
+}
+
+.scanner-corner {
+  position: absolute;
+  height: 47px;
+  width: 47px;
+  border-color: var(--app-scanner);
+  /* box-shadow: 0 0 12px rgb(184 212 255 / 85%); */
+}
+
+.scanner-line {
+  top: 7%;
+  animation: scanner-sweep 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes scanner-sweep {
+  to { transform: translateY(calc(min(68vw, 350px) - 42px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanner-line { animation: none; }
+}
