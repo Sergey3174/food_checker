@@ -91,7 +91,7 @@ export function ScanPage() {
           <span className="scanner-corner right-0 top-0 rounded-tr-[17px] border-r-4 border-t-4" />
           <span className="scanner-corner bottom-0 left-0 rounded-bl-[17px] border-b-4 border-l-4" />
           <span className="scanner-corner bottom-0 right-0 rounded-br-[17px] border-b-4 border-r-4" />
-          <div className="scanner-line absolute right-5 left-5 h-px bg-[var(--app-scanner)]" />
+          <div className="scanner-line absolute right-5 left-5 h-1 overflow-hidden rounded-full bg-[var(--app-scanner)]" />
         </div>
       </section>}
 
