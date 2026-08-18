@@ -98,6 +98,9 @@ html, body {
   --app-success: #9cb8ff;
   --auth-primary: var(--app-accent);
   --auth-primary-text: var(--app-accent-text);
+  --auth-text: var(--app-text);
+  --auth-muted: var(--app-text-subtle);
+  --auth-outline: var(--app-border);
 }
 
 .scanner-theme {

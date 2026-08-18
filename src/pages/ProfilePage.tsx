@@ -1,0 +1,178 @@
+import {
+  Bell,
+  ChevronDown,
+  Copy,
+  Globe2,
+  KeyRound,
+  Link2,
+  LogOut,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
+import { useState } from "react";
+import { AuthButton } from "../components/AuthButton";
+import { ChangePasswordForm } from "../components/ChangePasswordForm";
+import { LanguageSettings } from "../components/LanguageSettings";
+import { LinkedAccountsSettings } from "../components/LinkedAccountsSettings";
+import { NotificationSettings } from "../components/NotificationSettings";
+import { SubscriptionStatus } from "../components/SubscriptionStatus";
+
+const settings = [
+  {
+    icon: Bell,
+    label: "Уведомления",
+    description: "Напоминания о приёмах пищи и прогрессе",
+    content: NotificationSettings,
+  },
+  {
+    icon: Globe2,
+    label: "Язык",
+    description: "Русский",
+    content: LanguageSettings,
+  },
+  {
+    icon: Link2,
+    label: "Привязанные аккаунты",
+    description: "Управляйте способами входа",
+    content: LinkedAccountsSettings,
+  },
+  {
+    icon: ShieldCheck,
+    label: "Статус подписки",
+    description: "Бесплатный план",
+    content: SubscriptionStatus,
+  },
+  {
+    icon: KeyRound,
+    label: "Изменить пароль",
+    description: "Обновите пароль от аккаунта",
+    content: ChangePasswordForm,
+  },
+];
+
+export function ProfilePage() {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const uid = "09D4513924";
+
+  const copyUid = async () => {
+    await navigator.clipboard?.writeText(uid);
+    setIsCopied(true);
+    window.setTimeout(() => setIsCopied(false), 1600);
+  };
+
+  return (
+    <div className="mx-auto flex h-[100dvh] w-full flex-col overflow-auto  pt-3">
+      <header className="px-4 flex items-center justify-between">
+        <div>
+          {/* <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--app-text-subtle)]">
+            Настройки
+          </p> */}
+          <h1 className="mt-0.5 text-[24px] font-extrabold tracking-tight">
+            Профиль
+          </h1>
+        </div>
+        {/* <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--app-surface)] text-[var(--app-success)]">
+          <Crown size={20} />
+        </div> */}
+      </header>
+
+      {/* <section className="mt-5 rounded-[18px] border border-[var(--app-success)]/20 bg-[var(--app-surface-raised)] p-3.5">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--app-success)] text-[var(--app-accent-text)]">
+            <Crown size={19} />
+          </span>
+          <p className="min-w-0 flex-1 text-[12px] leading-[18px] text-[var(--app-text-muted)]">
+            Подписка не активна. Откройте все возможности Food.
+          </p>
+          <button className="shrink-0 rounded-xl bg-[var(--app-success)] px-3 py-2 text-[11px] font-extrabold text-[var(--app-accent-text)]" type="button">
+            Выбрать план
+          </button>
+        </div>
+      </section> */}
+
+      <section className="mt-5 px-4  flex items-center gap-3  border-b border-[var(--app-border)]/15 pb-5">
+        <div className="grid  h-18 w-18 shrink-0 place-items-center rounded-full border-3 border-[var(--app-success)]  text-[24px] font-extrabold text-white">
+          S
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[17px] font-extrabold">Sergey</h2>
+          <p className="mt-0.5 text-[12px] text-[var(--app-text-subtle)]">
+            @constmyname
+          </p>
+          <button
+            className="mt-1 flex items-center gap-1.5 text-[10px] text-[var(--app-text-muted)] transition-colors hover:text-[var(--app-success)]"
+            onClick={copyUid}
+            type="button"
+          >
+            UID: {uid}
+            <Copy size={12} />
+            {isCopied && (
+              <span className="text-[var(--app-success)]">Скопировано</span>
+            )}
+          </button>
+        </div>
+      </section>
+
+      <section
+        aria-label="Настройки профиля"
+        className="pt-5  pb-[78px] px-4 flex flex-col gap-2.5 overflow-auto"
+      >
+        {settings.map(
+          ({ icon: Icon, label, description, content: Content }) => {
+            const isExpanded = expandedItem === label;
+            return (
+              <article
+                className="overflow-hidden shrink-0 rounded-[16px] bg-[var(--app-surface)]"
+                key={label}
+              >
+                <button
+                  aria-expanded={isExpanded}
+                  className="flex w-full items-center gap-3 p-3.5 text-left"
+                  onClick={() => setExpandedItem(isExpanded ? null : label)}
+                  type="button"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--app-surface-raised)] text-[var(--app-success)]">
+                    <Icon size={18} />
+                  </span>
+                  <span className="flex-1 text-[13px] font-bold">{label}</span>
+                  <ChevronDown
+                    className={`text-[var(--app-text-subtle)] transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    size={18}
+                  />
+                </button>
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+                    isExpanded
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    {Content ? (
+                      <Content />
+                    ) : (
+                      <p className="border-t border-[var(--app-border)]/10 px-3.5 py-3 pl-15 text-[11px] text-[var(--app-text-subtle)]">
+                        {description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          },
+        )}
+        <section className="mt-5 flex flex-col gap-2 pb-3">
+        <AuthButton className="h-11 rounded-[14px] bg-[var(--app-surface)] !text-[#be2841] hover:bg-[var(--app-success)]">
+            <LogOut size={17} />
+            Выйти из аккаунта
+          </AuthButton>
+        <AuthButton className="h-11 rounded-[14px] bg-[var(--app-surface)] !text-[#be2841] hover:bg-[var(--app-success)]">
+            <Trash2 size={17} />
+            Удалить аккаунт
+          </AuthButton>
+        </section>
+      </section>
+    </div>
+  );
+}

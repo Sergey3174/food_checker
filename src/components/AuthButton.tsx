@@ -7,7 +7,7 @@ type AuthButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses = {
   primary:
-    "flex h-[47px] w-full items-center justify-center rounded-[12px] bg-[var(--auth-primary)] text-[12px] font-bold text-[var(--auth-primary-text)] transition-transform hover:-translate-y-0.5",
+    "flex h-[47px] w-full items-center justify-center gap-2 rounded-[12px] bg-[var(--auth-primary)] text-[12px] font-bold text-[var(--auth-primary-text)] transition-transform hover:-translate-y-0.5",
   secondary:
     "flex h-[47px] w-full items-center justify-center rounded-[12px] border-2 border-[var(--auth-outline)] text-[12px] font-bold text-[var(--auth-text)] transition-transform hover:-translate-y-0.5",
   text: "inline-block text-[11px] text-[var(--auth-muted)]",
