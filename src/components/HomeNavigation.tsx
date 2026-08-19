@@ -2,7 +2,7 @@ import { Check, Home, MessageCircle, ScanLine, UserRound } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navigationItemClassName = (isActive: boolean) =>
-  `flex flex-col items-center gap-1 transition-colors ${
+  `flex flex-col items-center gap-1 w-10 transition-colors ${
     isActive
       ? "font-bold text-[var(--app-success)]"
       : "text-[var(--app-text-subtle)]"

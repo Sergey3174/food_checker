@@ -116,7 +116,7 @@ export function ProfilePage() {
 
       <section
         aria-label="Настройки профиля"
-        className="pt-5  pb-[78px] px-4 flex flex-col gap-2.5 overflow-auto"
+        className="pt-5  pb-[78px] px-4 flex flex-1 flex-col gap-2.5 overflow-auto"
       >
         {settings.map(
           ({ icon: Icon, label, description, content: Content }) => {
@@ -162,12 +162,12 @@ export function ProfilePage() {
             );
           },
         )}
-        <section className="mt-5 flex flex-col gap-2 pb-3">
-        <AuthButton className="h-11 rounded-[14px] bg-[var(--app-surface)] !text-[#be2841] hover:bg-[var(--app-success)]">
+        <section className="mt-auto pt-5 flex flex-col gap-2 pb-3">
+          <AuthButton className="h-11 rounded-[14px] hover:bg-[var(--app-success)]">
             <LogOut size={17} />
             Выйти из аккаунта
           </AuthButton>
-        <AuthButton className="h-11 rounded-[14px] bg-[var(--app-surface)] !text-[#be2841] hover:bg-[var(--app-success)]">
+          <AuthButton className="h-11 rounded-[14px] hover:bg-[var(--app-success)]">
             <Trash2 size={17} />
             Удалить аккаунт
           </AuthButton>

@@ -127,6 +127,18 @@ html, body {
   animation: scanner-sweep 2.6s ease-in-out infinite alternate;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+
 @keyframes scanner-sweep {
   to { transform: translateY(calc(min(68vw, 350px) - 42px)); }
 }
