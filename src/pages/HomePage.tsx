@@ -1,23 +1,38 @@
 import {
   Apple,
+  BicepsFlexed,
+  Candy,
   CalendarDays,
+  CircleGauge,
   Coffee,
+  Droplet,
+  Droplets,
+  Dumbbell,
   Drumstick,
   Flame,
   Pizza,
   Salad,
+  Syringe,
   Wheat,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { ProgressRing } from "../components/ProgressRing";
+import { ProfileSettingCard } from "../components/ProfileSettingCard";
 import { WeekCalendar } from "../components/WeekCalendar";
 
 const macros = [
-  { label: "Protein", value: 84, total: 84, color: "#ff5a72" },
-  { label: "Carbs", value: 97, total: 280, color: "#f7b331" },
-  { label: "Fat", value: 9, total: 84, color: "#4bb9ff" },
-  { label: "Bread Units", value: 52, total: 102, color: "#72FF5A" },
-  { label: "Bread Units", value: 52, total: 102, color: "#72FF5A" },
+  { label: "Белки", value: 84, total: 84, color: "#ff5a72" },
+  { label: "Углеводы", value: 97, total: 280, color: "#f7b331" },
+  { label: "Жиры", value: 9, total: 84, color: "#4bb9ff" },
+  { label: "Хлебные единицы", value: 52, total: 102, color: "#72FF5A" },
+  { label: "Вес", value: 780, total: 1800, color: "#94a3b8" },
+  { label: "Сахар", value: 31, total: 50, color: "#e879f9" },
+  { label: "Гликемический индекс", value: 52, total: 100, color: "#60a5fa" },
+  { label: "Белково-жировые единицы", value: 7, total: 20, color: "#a78bfa" },
+  { label: "Инсулин", value: 8, total: 24, color: "#fb7185" },
+  { label: "Глюкоза до", value: 5.2, total: 10, color: "#38bdf8" },
+  { label: "Глюкоза после", value: 6.8, total: 10, color: "#2dd4bf" },
+  { label: "Физическая активность", value: 35, total: 60, color: "#facc15" },
 ];
 
 const VISIBLE_MACROS = 3;
@@ -40,6 +55,13 @@ const foodInsights = [
       { label: "Жиры", value: "0.3 г", icon: Salad },
       { label: "Углеводы", value: "25 г", icon: Pizza },
       { label: "Хлебные единицы", value: "16 г", icon: Wheat },
+      { label: "Сахар", value: "19 г", icon: Candy },
+      { label: "Гликемический индекс", value: "36", icon: CircleGauge },
+      { label: "Белково-жировые единицы", value: "0.3", icon: BicepsFlexed },
+      { label: "Инсулин", value: "1 ед.", icon: Syringe },
+      { label: "Глюкоза до", value: "5.2", icon: Droplet },
+      { label: "Глюкоза после", value: "6.4", icon: Droplets },
+      { label: "Физическая активность", value: "10 мин", icon: Dumbbell },
     ],
     weight: 10,
   },
@@ -53,6 +75,13 @@ const foodInsights = [
       { label: "Жиры", value: "13 г", icon: Salad },
       { label: "Углеводы", value: "42 г", icon: Pizza },
       { label: "Хлебные единицы", value: "16 г", icon: Wheat },
+      { label: "Сахар", value: "6 г", icon: Candy },
+      { label: "Гликемический индекс", value: "42", icon: CircleGauge },
+      { label: "Белково-жировые единицы", value: "1.1", icon: BicepsFlexed },
+      { label: "Инсулин", value: "4 ед.", icon: Syringe },
+      { label: "Глюкоза до", value: "5.4", icon: Droplet },
+      { label: "Глюкоза после", value: "6.8", icon: Droplets },
+      { label: "Физическая активность", value: "20 мин", icon: Dumbbell },
     ],
     weight: 10,
   },
@@ -66,6 +95,13 @@ const foodInsights = [
       { label: "Жиры", value: "7 г", icon: Salad },
       { label: "Углеводы", value: "48 г", icon: Pizza },
       { label: "Хлебные единицы", value: "16 г", icon: Wheat },
+      { label: "Сахар", value: "12 г", icon: Candy },
+      { label: "Гликемический индекс", value: "55", icon: CircleGauge },
+      { label: "Белково-жировые единицы", value: "0.8", icon: BicepsFlexed },
+      { label: "Инсулин", value: "3 ед.", icon: Syringe },
+      { label: "Глюкоза до", value: "5.1", icon: Droplet },
+      { label: "Глюкоза после", value: "6.2", icon: Droplets },
+      { label: "Физическая активность", value: "15 мин", icon: Dumbbell },
     ],
     weight: 10,
   },
@@ -73,6 +109,9 @@ const foodInsights = [
 
 export function HomePage() {
   const [firstVisibleMacro, setFirstVisibleMacro] = useState(0);
+  const [expandedFoodInsight, setExpandedFoodInsight] = useState<string | null>(
+    null,
+  );
   const macroDrag = useRef<{
     pointerId: number;
     scrollLeft: number;
@@ -91,7 +130,7 @@ export function HomePage() {
   return (
     <div className="mx-auto flex h-[100dvh] w-full flex-col overflow-auto px-4 pt-3 pb-[92px]">
       <header className="flex items-center justify-between">
-        <h1 className="text-[18px] font-extrabold tracking-tight">Food</h1>
+        <h1 className="text-[18px] font-extrabold tracking-tight">Еда</h1>
         <div className="flex items-center gap-5 text-[var(--app-text-muted)]">
           <CalendarDays size={18} />
         </div>
@@ -104,12 +143,12 @@ export function HomePage() {
           <div className="flex  flex-col justify-between">
             <div>
               <p className="text-[12px] text-[var(--app-text-muted)]">
-                Calories Left
+                Осталось калорий
               </p>
               <p className="mt-1 text-[29px] font-extrabold leading-none">
                 1904
                 <span className="ml-1 text-[12px] font-medium text-[var(--app-text-muted)]">
-                  kcal
+                  ккал
                 </span>
               </p>
             </div>
@@ -118,14 +157,14 @@ export function HomePage() {
                 <div className="leading-none flex items-center gap-1">
                   {" "}
                   <i className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--app-success)]" />
-                  EATHEN{" "}
+                  СЪЕДЕНО{" "}
                 </div>
                 <b className=" text-[11px]">642</b>
               </span>
               <span className="flex flex-col items-center  gap-1">
                 <div className="leading-none flex items-center gap-1">
                   <i className=" inline-block h-1.5 w-1.5 rounded-full bg-[#f7b331] " />
-                  BURNED
+                  СЖЕЧЕНО
                 </div>
                 <b className=" text-[11px]">0</b>
               </span>
@@ -261,24 +300,10 @@ export function HomePage() {
         </div>
         <div className="flex flex-col gap-2.5">
           {foodInsights.map(
-            ({ title, description, icon: FoodIcon, stats, weight }) => (
-              <article
-                className="overflow-hidden leading-none rounded-[18px] bg-[var(--app-surface)]"
-                key={title}
-              >
-                <div className="flex items-center gap-3 px-3.5 py-3">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-[var(--app-surface-raised)] text-[var(--app-success)]">
-                    <FoodIcon size={23} strokeWidth={1.8} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-[13px] font-extrabold">{title}</h3>
-                    <p className="mt-2 text-[11px] text-[var(--app-text-subtle)]">
-                      {description}
-                    </p>
-                  </div>
-                  <div className="text-[13px] font-extrabold">{weight} г</div>
-                </div>
-                <div className="grid grid-cols-5 border-t border-[var(--app-border)]/10">
+            ({ title, description, icon: FoodIcon, stats, weight }) => {
+              const isExpanded = expandedFoodInsight === title;
+              const FoodInsightContent = () => (
+                <div className="grid grid-cols-4 border-t border-[var(--app-border)]/10">
                   {stats.map(({ label, value, icon: StatIcon }) => (
                     <div
                       className="flex min-w-0 flex-col items-center gap-1 px-1 py-2 leading-none"
@@ -289,14 +314,44 @@ export function HomePage() {
                         size={13}
                       />
                       <span className="text-[10px] font-bold">{value}</span>
-                      <span className="truncate text-[8px] text-[var(--app-text-subtle)]">
+                      <span className="block w-full truncate text-center text-[8px] text-[var(--app-text-subtle)]">
                         {label}
                       </span>
                     </div>
                   ))}
                 </div>
-              </article>
-            ),
+              );
+
+              return (
+                <ProfileSettingCard
+                  content={FoodInsightContent}
+                  description={description}
+                  header={
+                    <>
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-[var(--app-surface-raised)] text-[var(--app-success)]">
+                        <FoodIcon size={23} strokeWidth={1.8} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[13px] font-extrabold">
+                          {title}
+                        </span>
+                        <span className="mt-2 block text-[11px] font-normal text-[var(--app-text-subtle)]">
+                          {description}
+                        </span>
+                      </span>
+                      <span className="text-[13px] font-extrabold">
+                        {weight} г
+                      </span>
+                    </>
+                  }
+                  isExpanded={isExpanded}
+                  key={title}
+                  onToggle={() =>
+                    setExpandedFoodInsight(isExpanded ? null : title)
+                  }
+                />
+              );
+            },
           )}
         </div>
       </section>

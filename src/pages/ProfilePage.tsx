@@ -1,6 +1,5 @@
 import {
   Bell,
-  ChevronDown,
   Copy,
   Globe2,
   KeyRound,
@@ -15,6 +14,10 @@ import { ChangePasswordForm } from "../components/ChangePasswordForm";
 import { LanguageSettings } from "../components/LanguageSettings";
 import { LinkedAccountsSettings } from "../components/LinkedAccountsSettings";
 import { NotificationSettings } from "../components/NotificationSettings";
+import {
+  ProfileSettingCard,
+  ProfileSettingCardHeader,
+} from "../components/ProfileSettingCard";
 import { SubscriptionStatus } from "../components/SubscriptionStatus";
 
 const settings = [
@@ -118,50 +121,20 @@ export function ProfilePage() {
         aria-label="Настройки профиля"
         className="pt-5  pb-[78px] px-4 flex flex-1 flex-col gap-2.5 overflow-auto"
       >
-        {settings.map(
-          ({ icon: Icon, label, description, content: Content }) => {
-            const isExpanded = expandedItem === label;
-            return (
-              <article
-                className="overflow-hidden shrink-0 rounded-[16px] bg-[var(--app-surface)]"
-                key={label}
-              >
-                <button
-                  aria-expanded={isExpanded}
-                  className="flex w-full items-center gap-3 p-3.5 text-left"
-                  onClick={() => setExpandedItem(isExpanded ? null : label)}
-                  type="button"
-                >
-                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--app-surface-raised)] text-[var(--app-success)]">
-                    <Icon size={18} />
-                  </span>
-                  <span className="flex-1 text-[13px] font-bold">{label}</span>
-                  <ChevronDown
-                    className={`text-[var(--app-text-subtle)] transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                    size={18}
-                  />
-                </button>
-                <div
-                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
-                    isExpanded
-                      ? "grid-rows-[1fr] opacity-100"
-                      : "grid-rows-[0fr] opacity-0"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    {Content ? (
-                      <Content />
-                    ) : (
-                      <p className="border-t border-[var(--app-border)]/10 px-3.5 py-3 pl-15 text-[11px] text-[var(--app-text-subtle)]">
-                        {description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </article>
-            );
-          },
-        )}
+        {settings.map(({ icon, label, description, content }) => {
+          const isExpanded = expandedItem === label;
+
+          return (
+            <ProfileSettingCard
+              content={content}
+              description={description}
+              header={<ProfileSettingCardHeader icon={icon} label={label} />}
+              isExpanded={isExpanded}
+              key={label}
+              onToggle={() => setExpandedItem(isExpanded ? null : label)}
+            />
+          );
+        })}
         <section className="mt-auto pt-5 flex flex-col gap-2 pb-3">
           <AuthButton className="h-11 rounded-[14px] hover:bg-[var(--app-success)]">
             <LogOut size={17} />
