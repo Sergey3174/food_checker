@@ -53,12 +53,12 @@ const axiosBaseQuery =
         const result = await apiClient(request);
         return { data: result.data, meta: { response: result } };
       } catch (error) {
-        const status = axios.isAxiosError(error)
-          ? error.response?.status
-          : undefined;
+        const isAxiosError = axios.isAxiosError(error);
+        const status = isAxiosError ? error.response?.status : undefined;
         const canRetry =
-          typeof status === "number" &&
-          RETRYABLE_STATUSES.has(status) &&
+          isAxiosError &&
+          (!error.response ||
+            (typeof status === "number" && RETRYABLE_STATUSES.has(status))) &&
           attempt < MAX_RETRIES;
 
         if (canRetry) {
