@@ -5,6 +5,11 @@ import { readStoredAuthorization } from "../store/authSlice";
 
 const baseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "") ?? "/api";
 const apiClient = axios.create({ baseURL: baseUrl });
+const RETRYABLE_STATUSES = new Set([502, 503, 504]);
+const MAX_RETRIES = 2;
+
+const wait = (milliseconds: number) =>
+  new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
 
 type AxiosBaseQueryArgs = {
   data?: unknown;
@@ -31,31 +36,50 @@ const axiosBaseQuery =
     AxiosBaseQueryMeta
   > =>
   async ({ url, method, data, headers, params }) => {
-    try {
-      const authorization = readStoredAuthorization();
-      const result = await apiClient({
-        data,
-        headers: {
-          ...(authorization ? { Authorization: authorization } : {}),
-          ...headers,
-        },
-        method,
-        params,
-        url,
-      });
-      return { data: result.data, meta: { response: result } };
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          error: {
-            data: error.response?.data ?? error.message,
-            status: error.response?.status ?? "FETCH_ERROR",
-          },
-        };
-      }
+    const authorization = readStoredAuthorization();
+    const request = {
+      data,
+      headers: {
+        ...(authorization ? { Authorization: authorization } : {}),
+        ...headers,
+      },
+      method,
+      params,
+      url,
+    };
 
-      return { error: { data: "Неизвестная ошибка", status: "FETCH_ERROR" } };
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
+      try {
+        const result = await apiClient(request);
+        return { data: result.data, meta: { response: result } };
+      } catch (error) {
+        const status = axios.isAxiosError(error)
+          ? error.response?.status
+          : undefined;
+        const canRetry =
+          typeof status === "number" &&
+          RETRYABLE_STATUSES.has(status) &&
+          attempt < MAX_RETRIES;
+
+        if (canRetry) {
+          await wait(500 * 2 ** attempt);
+          continue;
+        }
+
+        if (axios.isAxiosError(error)) {
+          return {
+            error: {
+              data: error.response?.data ?? error.message,
+              status: error.response?.status ?? "FETCH_ERROR",
+            },
+          };
+        }
+
+        return { error: { data: "Неизвестная ошибка", status: "FETCH_ERROR" } };
+      }
     }
+
+    return { error: { data: "Неизвестная ошибка", status: "FETCH_ERROR" } };
   };
 
 export type AuthRequest = {
