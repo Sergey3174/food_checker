@@ -36,28 +36,32 @@ export type FoodStat = {
 
 export function getFoodStats(food: FoodStatsSource): FoodStat[] {
   return [
-    { icon: Flame, label: "Calories", value: `${food.calories} kcal` },
-    { icon: Drumstick, label: "Proteins", value: `${food.proteins} g` },
+    { icon: Flame, label: "Калории", value: `${food.calories} ккал` },
+    { icon: Drumstick, label: "Белки", value: `${food.proteins} г` },
     // {
     //   icon: BicepsFlexed,
     //   label: "Proteins %",
     //   value: `${food.proteins_percent}%`,
     // },
-    { icon: Salad, label: "Fats", value: `${food.fats} g` },
+    { icon: Salad, label: "Жиры", value: `${food.fats} г` },
     // { icon: BicepsFlexed, label: "Fats %", value: `${food.fats_percent}%` },
-    { icon: Pizza, label: "Carbs", value: `${food.carbohydrates} g` },
+    { icon: Pizza, label: "Углеводы", value: `${food.carbohydrates} г` },
     // {
     //   icon: BicepsFlexed,
     //   label: "Carbs %",
     //   value: `${food.carbohydrates_percent}%`,
     // },
-    { icon: Candy, label: "Sugars", value: `${food.sugars} g` },
-    { icon: Wheat, label: "Bread units", value: food.bread_units },
+    { icon: Candy, label: "Сахар", value: `${food.sugars} г` },
+    { icon: Wheat, label: "Хлебные единицы", value: food.bread_units },
     // { icon: Scale, label: "Weight", value: `${food.total_weight} g` },
-    { icon: CircleGauge, label: "Glycemic index", value: food.glycemic_index },
+    {
+      icon: CircleGauge,
+      label: "Гликемический индекс",
+      value: food.glycemic_index,
+    },
     // { icon: BicepsFlexed, label: "Protein BJE", value: food.protein_bje },
     // { icon: BicepsFlexed, label: "Fats BJE", value: food.fats_bje },
     // { icon: Flame, label: "Calories BJE", value: food.calories_bje },
-    { icon: Apple, label: "BJE units", value: food.bje_units },
+    { icon: Apple, label: "БЖЕ", value: food.bje_units },
   ];
 }

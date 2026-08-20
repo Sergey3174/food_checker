@@ -1,52 +1,131 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const DAYS_IN_WEEK = 7;
+const OBSERVER_THRESHOLD = 0.6;
 
 export function WeekCalendar() {
   const [weekOffset, setWeekOffset] = useState(0);
+  const previousWeekMarkerRef = useRef<HTMLDivElement>(null);
+  const nextWeekMarkerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isRepositioning = useRef(false);
   const days = useMemo(() => {
     const today = new Date();
     const monday = new Date(today);
     monday.setDate(
-      today.getDate() - ((today.getDay() + 6) % 7) + weekOffset * 7,
+      today.getDate() -
+        ((today.getDay() + 6) % 7) -
+        DAYS_IN_WEEK +
+        weekOffset * DAYS_IN_WEEK,
     );
 
-    return Array.from({ length: 7 }, (_, index) => {
+    return Array.from({ length: DAYS_IN_WEEK * 3 }, (_, index) => {
       const date = new Date(monday);
       date.setDate(monday.getDate() + index);
       return {
         date,
         day: date.getDate().toString(),
+        isToday: date.toDateString() === today.toDateString(),
         weekDay: new Intl.DateTimeFormat("ru", { weekday: "short" })
           .format(date)
           .replace(".", ""),
-        isToday: date.toDateString() === today.toDateString(),
       };
     });
   }, [weekOffset]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const scroller = scrollRef.current;
+      if (!scroller) return;
+
+      scroller.scrollLeft = scroller.clientWidth;
+      window.setTimeout(() => {
+        isRepositioning.current = false;
+      }, 0);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [weekOffset]);
+
+  useEffect(() => {
+    const root = scrollRef.current;
+    const previousWeekMarker = previousWeekMarkerRef.current;
+    const nextWeekMarker = nextWeekMarkerRef.current;
+    if (!root || !previousWeekMarker || !nextWeekMarker) return;
+
+    const shiftWeek = (direction: -1 | 1) => {
+      if (isRepositioning.current) return;
+
+      isRepositioning.current = true;
+      setWeekOffset((offset) => offset + direction);
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (
+            !entry.isIntersecting ||
+            entry.intersectionRatio < OBSERVER_THRESHOLD
+          ) {
+            continue;
+          }
+
+          if (entry.target === previousWeekMarker) shiftWeek(-1);
+          if (entry.target === nextWeekMarker) shiftWeek(1);
+        }
+      },
+      { root, threshold: OBSERVER_THRESHOLD },
+    );
+
+    observer.observe(previousWeekMarker);
+    observer.observe(nextWeekMarker);
+    return () => observer.disconnect();
+  }, [weekOffset]);
+
+  function changeWeek(direction: -1 | 1) {
+    isRepositioning.current = true;
+    setWeekOffset((offset) => offset + direction);
+  }
 
   return (
     <section aria-label="Календарь" className="mt-4 flex items-center gap-1">
       <button
         aria-label="Предыдущая неделя"
         className="grid h-8 w-6 place-items-center text-[var(--app-text-subtle)]"
-        onClick={() => setWeekOffset((offset) => offset - 1)}
+        onClick={() => changeWeek(-1)}
         type="button"
       >
         <ChevronLeft size={16} />
       </button>
-      <div className="flex flex-1 justify-between gap-1">
-        {days.map(({ date, day, weekDay, isToday }) => (
+      <div
+        className="hide-scrollbar flex flex-1 w-full justify-between gap-1 overflow-x-scroll"
+        ref={scrollRef}
+      >
+        {days.map(({ date, day, weekDay, isToday }, index) => (
           <div
-            className={`grid  place-items-center rounded-full text-center "}`}
+            className="grid w-[calc(100%/7-4px)] shrink-0 place-items-center text-center"
             key={date.toISOString()}
+            ref={
+              index === 0
+                ? previousWeekMarkerRef
+                : index === DAYS_IN_WEEK * 3 - 1
+                  ? nextWeekMarkerRef
+                  : undefined
+            }
           >
             <span
-              className={`text-[13px] w-8 h-8 p-1.5 aspect-square rounded-full font-bold leading-none flex justify-center items-center ${isToday ? "bg-[var(--app-success)] text-[var(--app-accent-text)]" : "text-[var(--app-text-muted)]"}`}
+              className={`flex h-8 w-8 items-center justify-center rounded-full p-1.5 text-[13px] font-bold leading-none ${
+                isToday
+                  ? "bg-[var(--app-success)] text-[var(--app-accent-text)]"
+                  : "text-[var(--app-text-muted)]"
+              }`}
             >
               {day}
             </span>
             <span
-              className={`text-[8px] opacity-75 ${isToday ? "text-[var(--app-success)] " : ""}`}
+              className={`text-[8px] opacity-75 ${
+                isToday ? "text-[var(--app-success)]" : ""
+              }`}
             >
               {weekDay}
             </span>
@@ -56,7 +135,7 @@ export function WeekCalendar() {
       <button
         aria-label="Следующая неделя"
         className="grid h-8 w-6 place-items-center text-[var(--app-text-subtle)]"
-        onClick={() => setWeekOffset((offset) => offset + 1)}
+        onClick={() => changeWeek(1)}
         type="button"
       >
         <ChevronRight size={16} />

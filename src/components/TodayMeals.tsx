@@ -83,7 +83,7 @@ export function TodayMeals({ fallbackMeals }: TodayMealsProps) {
               {meal.ingredients?.length ? (
                 <div className="flex flex-col gap-2 border-t border-[var(--app-border)]/10 p-3">
                   <p className="text-[10px] font-bold text-[var(--app-text-muted)]">
-                    Ingredients
+                    Ингредиенты
                   </p>
                   {meal.ingredients.map((ingredient, index) => {
                     const ingredientId = `${mealId}-${index}`;
@@ -142,10 +142,10 @@ export function TodayMeals({ fallbackMeals }: TodayMealsProps) {
                     </span>
                   )}
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[13px] font-extrabold">
+                    <span className="lowercase first-letter:uppercase block text-[13px] font-extrabold">
                       {meal.title}
                     </span>
-                    <span className="mt-2 block text-[11px] font-normal text-[var(--app-text-subtle)]">
+                    <span className="mt-1 block text-[11px] font-normal text-[var(--app-text-subtle)]">
                       {meal.description}
                     </span>
                   </span>

@@ -59,12 +59,12 @@ export function ProfilePage() {
   const [isCopied, setIsCopied] = useState(false);
   const { data: profile } = useGetProfileQuery();
   const uid = profile?.identity ?? "—";
-  const fullName = [profile?.first_name, profile?.last_name]
-    .filter(Boolean)
-    .join(" ") || "User";
+  const fullName =
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
+    "User";
   const telegramUsername = profile?.tg_username
     ? `@${profile.tg_username.replace(/^@/, "")}`
-    : profile?.email ?? "";
+    : (profile?.email ?? "");
   const avatarLetter = fullName.charAt(0).toUpperCase() || "U";
 
   const copyUid = async () => {
@@ -80,9 +80,7 @@ export function ProfilePage() {
           {/* <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--app-text-subtle)]">
             Настройки
           </p> */}
-          <h1 className="mt-0.5 text-[24px] font-extrabold tracking-tight">
-            Профиль
-          </h1>
+          <h1 className="text-[18px] font-extrabold tracking-tight">Профиль</h1>
         </div>
         {/* <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--app-surface)] text-[var(--app-success)]">
           <Crown size={20} />

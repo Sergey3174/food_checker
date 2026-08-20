@@ -127,7 +127,9 @@ export function HomePage() {
   return (
     <div className="mx-auto flex h-[100dvh] w-full flex-col overflow-auto px-4 pt-3 pb-[92px]">
       <header className="flex items-center justify-between">
-        <h1 className="text-[18px] font-extrabold tracking-tight">Еда</h1>
+        <h1 className="text-[18px] font-extrabold tracking-tight">
+          Food детектор
+        </h1>
         <div className="flex items-center gap-5 text-[var(--app-text-muted)]">
           <CalendarDays size={18} />
         </div>
@@ -139,9 +141,9 @@ export function HomePage() {
         <div className="flex items-stretch justify-between gap-4">
           <div className="flex  flex-col justify-between">
             <div>
-              <p className="text-[12px] text-[var(--app-text-muted)]">
+              {/* <p className="text-[12px] text-[var(--app-text-muted)]">
                 Осталось калорий
-              </p>
+              </p> */}
               <p className="mt-1 text-[29px] font-extrabold leading-none">
                 1904
                 <span className="ml-1 text-[12px] font-medium text-[var(--app-text-muted)]">

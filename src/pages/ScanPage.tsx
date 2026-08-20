@@ -1,4 +1,4 @@
-import { Apple, ArrowLeft, Scale, Zap } from "lucide-react";
+import { ArrowLeft, Scale, Utensils, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/AuthButton";
@@ -108,10 +108,10 @@ function isCheckFoodResult(value: unknown): value is CheckFoodResult {
 
 function getCheckFoodMessage(result: CheckFoodResult) {
   if (result.detail === "api.details.ImageNotRecognized") {
-    return "Image was not recognized. Try taking another photo.";
+    return "Изображение не распознано. Попробуйте сделать другое фото.";
   }
 
-  return result.detail ?? "Couldn't analyze the image. Please try again.";
+  return result.detail ?? "Не удалось распознать изображение. Попробуйте ещё раз.";
 }
 
 export function ScanPage() {
@@ -207,7 +207,7 @@ export function ScanPage() {
     );
     if (!image) {
       setIsAwaitingResult(false);
-      setCheckFoodError("Couldn't prepare the image. Please try again.");
+      setCheckFoodError("Не удалось подготовить изображение. Попробуйте ещё раз.");
       return;
     }
 
@@ -215,7 +215,7 @@ export function ScanPage() {
       await checkFood({ image, sessionId }).unwrap();
     } catch {
       setIsAwaitingResult(false);
-      setCheckFoodError("Couldn't send the image. Please try again.");
+      setCheckFoodError("Не удалось отправить изображение. Попробуйте ещё раз.");
     }
   }
 
@@ -238,7 +238,7 @@ export function ScanPage() {
       {isSent ? (
         resultPhotoUrl && (
           <img
-            alt={foodData?.dish_name ?? "Recognized meal"}
+            alt={foodData?.dish_name ?? "Распознанное блюдо"}
             className="absolute inset-0 h-full w-full object-cover"
             src={resultPhotoUrl}
           />
@@ -264,9 +264,9 @@ export function ScanPage() {
           <ArrowLeft size={20} />
         </button>
         <div className="text-center">
-          <h1 className="text-[15px] font-bold">AI Meal Scan</h1>
+          <h1 className="text-[15px] font-bold">Сканирование блюда</h1>
           <p className="mt-0.5 text-[10px] text-[var(--app-text-muted)]">
-            Point your camera at your meal
+            Наведите камеру на блюдо
           </p>
         </div>
         <button
@@ -283,12 +283,12 @@ export function ScanPage() {
           <section className="relative z-10 grid flex-1 place-items-center">
             <div className="flex flex-col items-center gap-3">
               <span
-                aria-label="Analyzing image"
+                aria-label="Анализ изображения"
                 className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-[var(--app-scanner)]"
                 role="status"
               />
               <span className="text-[12px] font-semibold">
-                Analyzing image...
+                Анализируем изображение...
               </span>
             </div>
           </section>
@@ -311,11 +311,11 @@ export function ScanPage() {
         <section className="z-10 mt-auto min-h-0 flex flex-col  px-4 pb-6">
           <div className="min-h-0 rounded-[23px] flex-1 overflow-auto border border-[var(--app-border)]/30 bg-[var(--app-surface)]/90 p-4 shadow-2xl backdrop-blur-md">
             <div className="flex items-center gap-2 text-[11px] font-semibold text-[var(--app-text-muted)]">
-              {foodData?.dish_name ?? "Image was not recognized"}
+              {foodData?.dish_name ?? "Изображение не распознано"}
               {foodData && (
                 <span className="ml-auto flex items-center gap-1 text-[10px] text-[var(--app-text-muted)]">
                   <Scale size={13} />
-                  {foodData.total_weight} g
+                  {foodData.total_weight} г
                 </span>
               )}
             </div>
@@ -342,7 +342,7 @@ export function ScanPage() {
                 {foodData.ingredients?.length ? (
                   <div className="mt-3 border-t border-[var(--app-border)]/10 pt-3">
                     <p className="mb-2 text-[10px] font-bold text-[var(--app-text-muted)]">
-                      Ingredients
+                      Ингредиенты
                     </p>
                     <div className="flex flex-col gap-2">
                       {foodData.ingredients.map((ingredient, index) => {
@@ -379,14 +379,14 @@ export function ScanPage() {
                             header={
                               <>
                                 <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--app-surface-raised)] text-[var(--app-success)]">
-                                  <Apple size={18} />
+                                  <Utensils size={18} />
                                 </span>
                                 <span className="flex-1 text-[11px] font-bold">
                                   {ingredient.name}
                                 </span>
                                 <span className="flex items-center gap-1 text-[10px] text-[var(--app-text-muted)]">
                                   <Scale size={12} />
-                                  {ingredient.total_weight} g
+                                  {ingredient.total_weight} г
                                 </span>
                               </>
                             }
@@ -411,9 +411,9 @@ export function ScanPage() {
             )}
           </div>
 
-          <AuthButton className="mt-4 h-11">Save Meal</AuthButton>
+          <AuthButton className="mt-4 h-11">Сохранить блюдо</AuthButton>
           <AuthButton className="mt-2.5 h-11" onClick={handleRescan}>
-            Rescan
+            Сканировать снова
           </AuthButton>
         </section>
       )}
@@ -431,10 +431,10 @@ export function ScanPage() {
             onClick={sendImage}
           >
             {isCheckingFood
-              ? "Sending..."
+              ? "Отправляем..."
               : isAwaitingResult
-                ? "Analyzing image..."
-                : "Send"}
+                ? "Анализируем изображение..."
+                : "Отправить"}
           </AuthButton>
         </section>
       )}
