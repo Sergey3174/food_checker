@@ -122,6 +122,11 @@ type GptSessionResponse = {
   sessionId: string | null;
 };
 
+export type CheckFoodRequest = {
+  image: Blob;
+  sessionId: string;
+};
+
 export type CreateUserRequest = {
   hash: string;
   login: string;
@@ -152,10 +157,46 @@ export type ProfileResponse = {
   };
 };
 
+export type FoodHistoryIngredient = {
+  name: string;
+  calories: string;
+  proteins: string;
+  proteins_percent: string;
+  fats: string;
+  fats_percent: string;
+  carbohydrates: string;
+  carbohydrates_percent: string;
+  sugars: string;
+  bread_units: string;
+  total_weight: string;
+  glycemic_index: string;
+  protein_bje: string;
+  fats_bje: string;
+  calories_bje: string;
+  bje_units: string;
+};
+
+export type FoodHistoryItem = FoodHistoryIngredient & {
+  history_id: string;
+  dish_name: string;
+  path_to_photo: string | null;
+  ingredients: FoodHistoryIngredient[] | null;
+  recorded: boolean;
+  datetime: string;
+};
+
+export type GetHistoryResponse = {
+  data: FoodHistoryItem[];
+};
+
 export const baseApi = createApi({
   baseQuery: axiosBaseQuery(),
-  tagTypes: ["Profile"],
+  tagTypes: ["History", "Profile"],
   endpoints: (builder) => ({
+    getHistory: builder.query<GetHistoryResponse, void>({
+      query: () => ({ method: "GET", url: "api/v3/get_history" }),
+      providesTags: ["History"],
+    }),
     getProfile: builder.query<ProfileResponse, void>({
       query: () => ({ method: "GET", url: "api/v3/profile" }),
       providesTags: ["Profile"],
@@ -165,6 +206,19 @@ export const baseApi = createApi({
       transformResponse: (_response, meta) => ({
         sessionId: getResponseHeader(meta, "session-id"),
       }),
+    }),
+    checkFood: builder.mutation<unknown, CheckFoodRequest>({
+      query: ({ image, sessionId }) => {
+        const data = new FormData();
+        data.append("image", image, "food.jpg");
+
+        return {
+          data,
+          method: "POST",
+          params: { session_id: sessionId },
+          url: "api/v3/gpt/check_food",
+        };
+      },
     }),
     authenticate: builder.mutation<AuthorizationResponse, AuthRequest>({
       query: (body) => ({
@@ -215,6 +269,8 @@ export const {
   useConfirmLoginMutation,
   useCreateUserMutation,
   useCreateGptSessionMutation,
+  useCheckFoodMutation,
+  useGetHistoryQuery,
   useGetProfileQuery,
   useRecoverPasswordMutation,
 } = baseApi;

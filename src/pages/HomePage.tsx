@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { ProgressRing } from "../components/ProgressRing";
-import { ProfileSettingCard } from "../components/ProfileSettingCard";
+import { TodayMeals } from "../components/TodayMeals";
 import { WeekCalendar } from "../components/WeekCalendar";
 
 const macros = [
@@ -109,9 +109,6 @@ const foodInsights = [
 
 export function HomePage() {
   const [firstVisibleMacro, setFirstVisibleMacro] = useState(0);
-  const [expandedFoodInsight, setExpandedFoodInsight] = useState<string | null>(
-    null,
-  );
   const macroDrag = useRef<{
     pointerId: number;
     scrollLeft: number;
@@ -291,70 +288,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section aria-label="Блюда за сегодня" className="mt-5">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-[15px] font-extrabold">Сегодня</h2>
-          <span className="text-[11px] text-[var(--app-text-subtle)]">
-            3 блюда
-          </span>
-        </div>
-        <div className="flex flex-col gap-2.5">
-          {foodInsights.map(
-            ({ title, description, icon: FoodIcon, stats, weight }) => {
-              const isExpanded = expandedFoodInsight === title;
-              const FoodInsightContent = () => (
-                <div className="grid grid-cols-4 border-t border-[var(--app-border)]/10">
-                  {stats.map(({ label, value, icon: StatIcon }) => (
-                    <div
-                      className="flex min-w-0 flex-col items-center gap-1 px-1 py-2 leading-none"
-                      key={label}
-                    >
-                      <StatIcon
-                        className="text-[var(--app-success)]"
-                        size={13}
-                      />
-                      <span className="text-[10px] font-bold">{value}</span>
-                      <span className="block w-full truncate text-center text-[8px] text-[var(--app-text-subtle)]">
-                        {label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              );
-
-              return (
-                <ProfileSettingCard
-                  content={FoodInsightContent}
-                  description={description}
-                  header={
-                    <>
-                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-[var(--app-surface-raised)] text-[var(--app-success)]">
-                        <FoodIcon size={23} strokeWidth={1.8} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[13px] font-extrabold">
-                          {title}
-                        </span>
-                        <span className="mt-2 block text-[11px] font-normal text-[var(--app-text-subtle)]">
-                          {description}
-                        </span>
-                      </span>
-                      <span className="text-[13px] font-extrabold">
-                        {weight} г
-                      </span>
-                    </>
-                  }
-                  isExpanded={isExpanded}
-                  key={title}
-                  onToggle={() =>
-                    setExpandedFoodInsight(isExpanded ? null : title)
-                  }
-                />
-              );
-            },
-          )}
-        </div>
-      </section>
+      <TodayMeals fallbackMeals={foodInsights} />
     </div>
   );
 }

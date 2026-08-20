@@ -41,7 +41,7 @@ export function WeekCalendar() {
             key={date.toISOString()}
           >
             <span
-              className={`text-[13px] w-8 h-8 p-1.5 aspect-square rounded-full font-bold leading-none flex items-center ${isToday ? "bg-[var(--app-success)] text-[var(--app-accent-text)]" : "text-[var(--app-text-muted)]"}`}
+              className={`text-[13px] w-8 h-8 p-1.5 aspect-square rounded-full font-bold leading-none flex justify-center items-center ${isToday ? "bg-[var(--app-success)] text-[var(--app-accent-text)]" : "text-[var(--app-text-muted)]"}`}
             >
               {day}
             </span>

@@ -1,8 +1,10 @@
 import { ChevronDown, type LucideIcon } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 type ProfileSettingCardProps = {
   content?: ComponentType;
+  contentNode?: ReactNode;
   description: string;
   header: ReactNode;
   isExpanded: boolean;
@@ -30,11 +32,19 @@ export function ProfileSettingCardHeader({
 
 export function ProfileSettingCard({
   content: Content,
+  contentNode,
   description,
   header,
   isExpanded,
   onToggle,
 }: ProfileSettingCardProps) {
+  const [isContentMounted, setIsContentMounted] = useState(isExpanded);
+  const shouldRenderContent = isContentMounted || isExpanded;
+
+  useEffect(() => {
+    if (isExpanded) setIsContentMounted(true);
+  }, [isExpanded]);
+
   return (
     <article className="shrink-0 overflow-hidden rounded-[16px] bg-[var(--app-surface)]">
       <button
@@ -57,15 +67,22 @@ export function ProfileSettingCard({
             ? "grid-rows-[1fr] opacity-100"
             : "grid-rows-[0fr] opacity-0"
         }`}
+        onTransitionEnd={(event) => {
+          if (!isExpanded && event.propertyName === "grid-template-rows") {
+            setIsContentMounted(false);
+          }
+        }}
       >
         <div className="overflow-hidden">
-          {Content ? (
+          {shouldRenderContent && contentNode ? (
+            contentNode
+          ) : shouldRenderContent && Content ? (
             <Content />
-          ) : (
+          ) : shouldRenderContent ? (
             <p className="border-t border-[var(--app-border)]/10 px-3.5 py-3 pl-15 text-[11px] text-[var(--app-text-subtle)]">
               {description}
             </p>
-          )}
+          ) : null}
         </div>
       </div>
     </article>
