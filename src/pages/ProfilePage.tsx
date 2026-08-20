@@ -19,6 +19,7 @@ import {
   ProfileSettingCardHeader,
 } from "../components/ProfileSettingCard";
 import { SubscriptionStatus } from "../components/SubscriptionStatus";
+import { useGetProfileQuery } from "../api/baseApi";
 
 const settings = [
   {
@@ -56,7 +57,15 @@ const settings = [
 export function ProfilePage() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
-  const uid = "09D4513924";
+  const { data: profile } = useGetProfileQuery();
+  const uid = profile?.identity ?? "—";
+  const fullName = [profile?.first_name, profile?.last_name]
+    .filter(Boolean)
+    .join(" ") || "User";
+  const telegramUsername = profile?.tg_username
+    ? `@${profile.tg_username.replace(/^@/, "")}`
+    : profile?.email ?? "";
+  const avatarLetter = fullName.charAt(0).toUpperCase() || "U";
 
   const copyUid = async () => {
     await navigator.clipboard?.writeText(uid);
@@ -96,12 +105,12 @@ export function ProfilePage() {
 
       <section className="mt-5 px-4  flex items-center gap-3  border-b border-[var(--app-border)]/15 pb-5">
         <div className="grid  h-18 w-18 shrink-0 place-items-center rounded-full border-3 border-[var(--app-success)]  text-[24px] font-extrabold text-white">
-          S
+          {avatarLetter}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-[17px] font-extrabold">Sergey</h2>
+          <h2 className="text-[17px] font-extrabold">{fullName}</h2>
           <p className="mt-0.5 text-[12px] text-[var(--app-text-subtle)]">
-            @constmyname
+            {telegramUsername}
           </p>
           <button
             className="mt-1 flex items-center gap-1.5 text-[10px] text-[var(--app-text-muted)] transition-colors hover:text-[var(--app-success)]"

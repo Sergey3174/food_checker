@@ -6,10 +6,13 @@ import { HomeLayout } from "../layouts/HomeLayout";
 import { AuthPage } from "../pages/AuthPage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { OtpPage } from "../pages/OtpPage";
+import { ForgotPasswordPage } from "../pages/ForgotPasswordPage";
+import { RecoveryPasswordPage } from "../pages/RecoveryPasswordPage";
 import { HomePage } from "../pages/HomePage";
 import { ChatPage } from "../pages/ChatPage";
 import { ScanPage } from "../pages/ScanPage";
 import { ProfilePage } from "../pages/ProfilePage";
+import { RequireAuth, RequireGuest } from "./AuthGuards";
 // import { OtpPage } from "../pages/OtpPage";
 
 export const router = createBrowserRouter([
@@ -26,37 +29,55 @@ export const router = createBrowserRouter([
       //   element: <WelcomePage />,
       // },
       {
-        element: <HomeLayout />,
+        element: <RequireAuth />,
         children: [
           {
-            path: "home",
-            element: <HomePage />,
+            element: <HomeLayout />,
+            children: [
+              {
+                path: "home",
+                element: <HomePage />,
+              },
+              {
+                path: "profile",
+                element: <ProfilePage />,
+              },
+            ],
           },
           {
-            path: "profile",
-            element: <ProfilePage />,
+            path: "chat",
+            element: <ChatPage />,
+          },
+          {
+            path: "scan",
+            element: <ScanPage />,
           },
         ],
       },
       {
-        path: "chat",
-        element: <ChatPage />,
-      },
-      {
-        path: "scan",
-        element: <ScanPage />,
-      },
-      {
-        path: "auth",
-        element: <AuthPage />,
-      },
-      {
-        path: "reg",
-        element: <RegisterPage />,
-      },
-      {
-        path: "otp",
-        element: <OtpPage />,
+        element: <RequireGuest />,
+        children: [
+          {
+            path: "auth",
+            element: <AuthPage />,
+          },
+          {
+            path: "reg",
+            element: <RegisterPage />,
+          },
+          {
+            path: "otp",
+            element: <OtpPage />,
+          },
+          {
+            path: "forgot-password",
+            element: <ForgotPasswordPage />,
+          },
+          {
+            path: "recovery-password",
+            element: <RecoveryPasswordPage />,
+          },
+        ],
       },
     ],
   },

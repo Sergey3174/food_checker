@@ -2,6 +2,7 @@ import { ArrowLeft, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/AuthButton";
+import { useGptSession } from "../hooks/useGptSession";
 
 const nutrition = [
   { value: "420", label: "kcal" },
@@ -12,6 +13,7 @@ const nutrition = [
 
 export function ScanPage() {
   const navigate = useNavigate();
+  useGptSession();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isSent, setIsSent] = useState(false);
 

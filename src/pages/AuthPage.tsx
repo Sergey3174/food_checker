@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/AuthButton";
 import { AuthEmailForm } from "../components/AuthEmailForm";
@@ -8,11 +7,6 @@ import { AuthLayout } from "../layouts/AuthLayout";
 export function AuthPage() {
   const [isEmailFormOpen, setIsEmailFormOpen] = useState(false);
   const navigate = useNavigate();
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    navigate("/home");
-  }
 
   return (
     <AuthLayout
@@ -26,7 +20,7 @@ export function AuthPage() {
         {isEmailFormOpen ? (
           <AuthEmailForm
             onBack={() => setIsEmailFormOpen(false)}
-            onSubmit={handleSubmit}
+            onSuccess={() => navigate("/home")}
           />
         ) : (
           <>

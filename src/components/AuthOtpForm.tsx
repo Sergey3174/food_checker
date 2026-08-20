@@ -4,13 +4,20 @@ import { ArrowLeft } from "lucide-react";
 import { AuthButton } from "./AuthButton";
 
 type AuthOtpFormProps = {
+  errorMessage?: string | null;
+  isLoading?: boolean;
   onBack: () => void;
   onSubmit: (code: string) => void;
 };
 
-const OTP_LENGTH = 6;
+const OTP_LENGTH = 4;
 
-export function AuthOtpForm({ onBack, onSubmit }: AuthOtpFormProps) {
+export function AuthOtpForm({
+  errorMessage,
+  isLoading = false,
+  onBack,
+  onSubmit,
+}: AuthOtpFormProps) {
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -25,7 +32,10 @@ export function AuthOtpForm({ onBack, onSubmit }: AuthOtpFormProps) {
     }
   }
 
-  function handleKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(
+    index: number,
+    event: KeyboardEvent<HTMLInputElement>,
+  ) {
     if (event.key === "Backspace" && !digits[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -45,14 +55,24 @@ export function AuthOtpForm({ onBack, onSubmit }: AuthOtpFormProps) {
 
   return (
     <form className="relative" onSubmit={handleSubmit}>
-      <AuthButton className="absolute -top-9 left-0" variant="icon" onClick={onBack} aria-label="Back to registration">
+      <AuthButton
+        className="absolute -top-9 left-0"
+        variant="icon"
+        onClick={onBack}
+        aria-label="Back to registration"
+      >
         <ArrowLeft size={19} aria-hidden="true" />
       </AuthButton>
-      <div className="flex justify-center gap-2.5" aria-label="Verification code">
+      <div
+        className="flex justify-center gap-2.5"
+        aria-label="Verification code"
+      >
         {digits.map((digit, index) => (
           <input
             key={index}
-            ref={(element) => { inputRefs.current[index] = element; }}
+            ref={(element) => {
+              inputRefs.current[index] = element;
+            }}
             className="h-12 w-10 rounded-xl border border-[var(--auth-outline)] bg-white/10 text-center text-lg font-bold text-white outline-none focus:border-white"
             aria-label={`Digit ${index + 1}`}
             inputMode="numeric"
@@ -64,7 +84,14 @@ export function AuthOtpForm({ onBack, onSubmit }: AuthOtpFormProps) {
           />
         ))}
       </div>
-      <AuthButton className="mt-5" type="submit">Verify code</AuthButton>
+      {errorMessage && (
+        <p className="mt-3 text-center text-[11px] text-red-300">
+          {errorMessage}
+        </p>
+      )}
+      <AuthButton className="mt-5" disabled={isLoading} type="submit">
+        {isLoading ? "Проверяем..." : "Подтвердить код"}
+      </AuthButton>
     </form>
   );
 }

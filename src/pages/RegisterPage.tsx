@@ -1,15 +1,15 @@
-import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { AuthRegisterForm } from "../components/AuthRegisterForm";
 import { AuthLayout } from "../layouts/AuthLayout";
+import {
+  setRegistrationCredentials,
+  type RegistrationCredentials,
+} from "../store/authSlice";
 
 export function RegisterPage() {
   const navigate = useNavigate();
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    navigate("/otp");
-  }
+  const dispatch = useDispatch();
 
   return (
     <AuthLayout
@@ -18,7 +18,10 @@ export function RegisterPage() {
     >
       <AuthRegisterForm
         onBack={() => navigate("/auth")}
-        onSubmit={handleSubmit}
+        onSuccess={(credentials: RegistrationCredentials) => {
+          dispatch(setRegistrationCredentials(credentials));
+          navigate("/otp");
+        }}
       />
     </AuthLayout>
   );

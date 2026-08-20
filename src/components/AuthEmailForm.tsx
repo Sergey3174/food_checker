@@ -1,16 +1,43 @@
 import type { FormEvent } from "react";
 import { ArrowLeft } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { getApiErrorMessage, useAuthenticateMutation } from "../api/baseApi";
+import { persistAuth, setIsAuthenticated } from "../store/authSlice";
 import { AuthButton } from "./AuthButton";
 import { AuthInput } from "./AuthInput";
+import { useNavigate } from "react-router-dom";
 
 type AuthEmailFormProps = {
   onBack: () => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSuccess: () => void;
 };
 
-export function AuthEmailForm({ onBack, onSubmit }: AuthEmailFormProps) {
+export function AuthEmailForm({ onBack, onSuccess }: AuthEmailFormProps) {
+  const [authenticate, { error, isLoading }] = useAuthenticateMutation();
+  const dispatch = useDispatch();
+  const errorMessage = getApiErrorMessage(error);
+
+  const navigate = useNavigate();
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    try {
+      const result = await authenticate({
+        login: String(formData.get("login") ?? ""),
+        password: String(formData.get("password") ?? ""),
+      }).unwrap();
+      persistAuth(result.authorization);
+      dispatch(setIsAuthenticated(Boolean(result.authorization)));
+      onSuccess();
+    } catch {
+      // RTK Query stores the request error in `error` for the form message.
+    }
+  }
+
   return (
-    <form className="relative space-y-2.5" onSubmit={onSubmit}>
+    <form className="relative space-y-2.5" onSubmit={handleSubmit}>
       <AuthButton
         className="absolute -top-9 left-0"
         variant="icon"
@@ -22,7 +49,7 @@ export function AuthEmailForm({ onBack, onSubmit }: AuthEmailFormProps) {
       <AuthInput
         label="Email"
         id="email"
-        name="email"
+        name="login"
         type="email"
         placeholder="Email"
         required
@@ -37,7 +64,21 @@ export function AuthEmailForm({ onBack, onSubmit }: AuthEmailFormProps) {
         required
         autoComplete="current-password"
       />
-      <AuthButton type="submit">Login</AuthButton>
+      <div className="flex">
+        <AuthButton
+          className=""
+          variant="text"
+          onClick={() => navigate("/forgot-password")}
+        >
+          Забыли пароль?
+        </AuthButton>
+      </div>
+      {errorMessage && (
+        <p className="text-center text-[11px] text-red-300">{errorMessage}</p>
+      )}
+      <AuthButton disabled={isLoading} type="submit">
+        {isLoading ? "Входим..." : "Войти"}
+      </AuthButton>
     </form>
   );
 }

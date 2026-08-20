@@ -1,6 +1,7 @@
 import { ArrowLeft, Bot, Paperclip, SendHorizontal } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGptSession } from "../hooks/useGptSession";
 
 const initialMessages = [
   {
@@ -22,6 +23,7 @@ const initialMessages = [
 
 export function ChatPage() {
   const navigate = useNavigate();
+  useGptSession();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(initialMessages);

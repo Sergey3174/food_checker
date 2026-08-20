@@ -164,7 +164,7 @@ export function HomePage() {
               <span className="flex flex-col items-center  gap-1">
                 <div className="leading-none flex items-center gap-1">
                   <i className=" inline-block h-1.5 w-1.5 rounded-full bg-[#f7b331] " />
-                  СЖЕЧЕНО
+                  СОЖЖЕНО
                 </div>
                 <b className=" text-[11px]">0</b>
               </span>
