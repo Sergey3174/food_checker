@@ -12,7 +12,7 @@ const macros = [
   // { label: "Вес", value: 780, total: 1800, color: "#94a3b8" },
   { label: "Сахар", value: 31, total: 50, color: "#e879f9" },
   { label: "Гликемический индекс", value: 52, total: 100, color: "#60a5fa" },
-  { label: "Белково-жировые единицы", value: 7, total: 20, color: "#a78bfa" },
+  { label: "БЖЕ", value: 7, total: 20, color: "#a78bfa" },
   { label: "Инсулин", value: 8, total: 24, color: "#fb7185" },
   { label: "Глюкоза до", value: 5.2, total: 10, color: "#38bdf8" },
   { label: "Глюкоза после", value: 6.8, total: 10, color: "#2dd4bf" },
