@@ -111,7 +111,9 @@ function getCheckFoodMessage(result: CheckFoodResult) {
     return "Изображение не распознано. Попробуйте сделать другое фото.";
   }
 
-  return result.detail ?? "Не удалось распознать изображение. Попробуйте ещё раз.";
+  return (
+    result.detail ?? "Не удалось распознать изображение. Попробуйте ещё раз."
+  );
 }
 
 export function ScanPage() {
@@ -207,7 +209,9 @@ export function ScanPage() {
     );
     if (!image) {
       setIsAwaitingResult(false);
-      setCheckFoodError("Не удалось подготовить изображение. Попробуйте ещё раз.");
+      setCheckFoodError(
+        "Не удалось подготовить изображение. Попробуйте ещё раз.",
+      );
       return;
     }
 
@@ -215,7 +219,9 @@ export function ScanPage() {
       await checkFood({ image, sessionId }).unwrap();
     } catch {
       setIsAwaitingResult(false);
-      setCheckFoodError("Не удалось отправить изображение. Попробуйте ещё раз.");
+      setCheckFoodError(
+        "Не удалось отправить изображение. Попробуйте ещё раз.",
+      );
     }
   }
 
@@ -411,7 +417,7 @@ export function ScanPage() {
             )}
           </div>
 
-          <AuthButton className="mt-4 h-11">Сохранить блюдо</AuthButton>
+          <AuthButton className="mt-4 h-11">Сохранить в дневник</AuthButton>
           <AuthButton className="mt-2.5 h-11" onClick={handleRescan}>
             Сканировать снова
           </AuthButton>
