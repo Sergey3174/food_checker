@@ -42,6 +42,61 @@ type CheckFoodIngredient = Omit<CheckFoodData, "dish_name" | "ingredients"> & {
   name: string;
 };
 
+const REAR_CAMERA_PATTERNS = [
+  /back/i,
+  /rear/i,
+  /environment/i,
+  /world/i,
+  /основ/i,
+  /задн/i,
+];
+const WIDE_CAMERA_PATTERNS = [
+  /wide/i,
+  /ultra/i,
+  /uw/i,
+  /0\.5x/i,
+  /0,5x/i,
+  /широк/i,
+];
+
+function getCameraScore(camera: MediaDeviceInfo) {
+  const label = camera.label;
+  const cameraNumber = label.match(/camera\s+(\d+)/i)?.[1];
+  let score = 0;
+
+  if (REAR_CAMERA_PATTERNS.some((pattern) => pattern.test(label))) score += 10;
+  if (WIDE_CAMERA_PATTERNS.some((pattern) => pattern.test(label))) score -= 20;
+  if (cameraNumber === "0") score += 15;
+  if (cameraNumber && cameraNumber !== "0") score -= Number(cameraNumber);
+
+  return score;
+}
+
+async function getPreferredCamera() {
+  if (!navigator.mediaDevices?.enumerateDevices) return null;
+
+  let permissionStream: MediaStream | null = null;
+  try {
+    permissionStream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: { facingMode: { ideal: "environment" } },
+    });
+    const cameras = (await navigator.mediaDevices.enumerateDevices()).filter(
+      (device) => device.kind === "videoinput",
+    );
+
+    return (
+      [...cameras].sort(
+        (first, second) => getCameraScore(second) - getCameraScore(first),
+      )[0] ?? null
+    );
+  } catch {
+    return null;
+  } finally {
+    permissionStream?.getTracks().forEach((track) => track.stop());
+  }
+}
+
 function isCheckFoodResult(value: unknown): value is CheckFoodResult {
   return (
     typeof value === "object" &&
@@ -83,10 +138,20 @@ export function ScanPage() {
       if (!navigator.mediaDevices?.getUserMedia) return;
 
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
-          audio: false,
-        });
+        const preferredCamera = await getPreferredCamera();
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: preferredCamera
+              ? { deviceId: { exact: preferredCamera.deviceId } }
+              : { facingMode: { ideal: "environment" } },
+          });
+        } catch {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: { facingMode: { ideal: "environment" } },
+          });
+        }
 
         if (isDisposed) {
           stream.getTracks().forEach((track) => track.stop());
@@ -189,7 +254,7 @@ export function ScanPage() {
       )}
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,13,34,.78)_0%,transparent_15%,transparent_40%,rgba(8,13,34,.82)_100%)]" />
 
-      <header className="relative z-10 flex items-center justify-between px-4 pt-3">
+      <header className="relative z-10 flex items-center justify-between px-4 pt-3 pb-2">
         <button
           aria-label="Назад"
           className="grid h-10 w-10 place-items-center rounded-full border border-[var(--app-border)]/20 bg-[var(--app-surface-raised)]/70 backdrop-blur-sm"
