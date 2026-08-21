@@ -1,5 +1,6 @@
 import { CalendarDays, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { HomeDiarySkeleton } from "../components/HomeDiarySkeleton";
 import { ProgressRing } from "../components/ProgressRing";
 import { TodayMeals } from "../components/TodayMeals";
 import { WeekCalendar } from "../components/WeekCalendar";
@@ -114,7 +115,8 @@ export function HomePage() {
   const [firstVisibleMacro, setFirstVisibleMacro] = useState(0);
   const [activityLevel, setActivityLevel] = useState("Средняя");
   const [selectedDate, setSelectedDate] = useState(getTodayDate);
-  const [getDiaries, { data: diaries }] = useGetDiariesMutation();
+  const [getDiaries, { data: diaries, isLoading: isDiaryLoading }] =
+    useGetDiariesMutation();
   const summary = diaries?.summary;
   const consumedCalories = getNumericValue(summary?.calories);
   const caloriesPercent = Math.round(
@@ -184,6 +186,10 @@ export function HomePage() {
         selectedDate={selectedDate}
       />
 
+      {isDiaryLoading ? (
+        <HomeDiarySkeleton />
+      ) : (
+        <>
       <section className="mt-3 rounded-[18px] bg-[var(--app-surface)] p-3.5">
         <div className="flex items-stretch justify-between gap-4">
           <div className="flex  flex-col justify-between">
@@ -345,6 +351,8 @@ export function HomePage() {
       </section>
 
       <TodayMeals meals={diaries?.data ?? []} selectedDate={selectedDate} />
+        </>
+      )}
     </div>
   );
 }
