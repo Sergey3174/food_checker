@@ -143,6 +143,10 @@ export function HomePage() {
     void getDiaries({ date: selectedDate });
   }, [getDiaries, selectedDate]);
 
+  useEffect(() => {
+    if (isDiaryLoading) setFirstVisibleMacro(0);
+  }, [isDiaryLoading]);
+
   return (
     <div className="mx-auto flex h-[100dvh] w-full flex-col overflow-auto px-4 pt-3 pb-[92px]">
       <header className="flex items-center justify-between">
