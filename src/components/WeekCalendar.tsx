@@ -4,7 +4,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 const DAYS_IN_WEEK = 7;
 const OBSERVER_THRESHOLD = 0.6;
 
-export function WeekCalendar() {
+type WeekCalendarProps = {
+  selectedDate: string;
+  onDateSelect: (date: string) => void;
+};
+
+function formatDate(date: Date) {
+  return [
+    date.getDate().toString().padStart(2, "0"),
+    (date.getMonth() + 1).toString().padStart(2, "0"),
+    date.getFullYear(),
+  ].join("-");
+}
+
+export function WeekCalendar({
+  selectedDate,
+  onDateSelect,
+}: WeekCalendarProps) {
   const [weekOffset, setWeekOffset] = useState(0);
   const previousWeekMarkerRef = useRef<HTMLDivElement>(null);
   const nextWeekMarkerRef = useRef<HTMLDivElement>(null);
@@ -12,6 +28,11 @@ export function WeekCalendar() {
   const isRepositioning = useRef(false);
   const days = useMemo(() => {
     const today = new Date();
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
     const monday = new Date(today);
     monday.setDate(
       today.getDate() -
@@ -26,6 +47,13 @@ export function WeekCalendar() {
       return {
         date,
         day: date.getDate().toString(),
+        formattedDate: formatDate(date),
+        isFuture:
+          new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+          ) > todayStart,
         isToday: date.toDateString() === today.toDateString(),
         weekDay: new Intl.DateTimeFormat("ru", { weekday: "short" })
           .format(date)
@@ -101,7 +129,8 @@ export function WeekCalendar() {
         className="hide-scrollbar flex flex-1 w-full justify-between gap-1 overflow-x-scroll"
         ref={scrollRef}
       >
-        {days.map(({ date, day, weekDay, isToday }, index) => (
+        {days.map(
+          ({ date, day, formattedDate, isFuture, isToday, weekDay }, index) => (
           <div
             className="grid w-[calc(100%/7-4px)] shrink-0 place-items-center text-center"
             key={date.toISOString()}
@@ -113,24 +142,33 @@ export function WeekCalendar() {
                   : undefined
             }
           >
-            <span
-              className={`flex h-8 w-8 items-center justify-center rounded-full p-1.5 text-[13px] font-bold leading-none ${
-                isToday
+            <button
+              aria-label={formattedDate}
+              className={`flex h-8 w-8 items-center justify-center rounded-full p-1.5 text-[13px] font-bold leading-none transition-opacity ${
+                selectedDate === formattedDate
                   ? "bg-[var(--app-success)] text-[var(--app-accent-text)]"
-                  : "text-[var(--app-text-muted)]"
-              }`}
+                  : isToday
+                    ? "text-[var(--app-success)]"
+                    : "text-[var(--app-text-muted)]"
+              } ${isFuture ? "cursor-not-allowed opacity-35" : ""}`}
+              disabled={isFuture}
+              onClick={() => onDateSelect(formattedDate)}
+              type="button"
             >
               {day}
-            </span>
+            </button>
             <span
-              className={`text-[8px] opacity-75 ${
-                isToday ? "text-[var(--app-success)]" : ""
-              }`}
+              className={`text-[8px] ${
+                selectedDate === formattedDate || isToday
+                  ? "text-[var(--app-success)]"
+                  : ""
+              } ${isFuture ? "opacity-35" : "opacity-75"}`}
             >
               {weekDay}
             </span>
           </div>
-        ))}
+          ),
+        )}
       </div>
       <button
         aria-label="Следующая неделя"

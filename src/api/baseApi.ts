@@ -213,6 +213,41 @@ export type GetHistoryResponse = {
   data: FoodHistoryItem[];
 };
 
+export type SaveDiaryRequest = {
+  timezone: number;
+  history_id: number;
+  insulin: string;
+  glucose_before: string;
+  blood_pressure: string;
+  activity_lvl: number;
+};
+
+export type GetDiariesRequest = {
+  date: string;
+};
+
+export type DiaryDish = FoodHistoryIngredient & {
+  activity_lvl: number;
+  blood_pressure: string | null;
+  created_at: string;
+  created_at_without_time: string;
+  dish_id: string;
+  dish_name: string;
+  glucose_after: string | null;
+  glucose_before: string | null;
+  ingredients: FoodHistoryIngredient[] | null;
+  insulin: string | null;
+  path_to_photo: string | null;
+};
+
+export type GetDiariesResponse = {
+  data: DiaryDish[];
+  glucose_unit: string;
+  list_all_dates: string[];
+  show_notif: unknown;
+  summary: DiaryDish;
+};
+
 export const baseApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["History", "Profile"],
@@ -243,6 +278,21 @@ export const baseApi = createApi({
           url: "api/v3/gpt/check_food",
         };
       },
+    }),
+    saveDiary: builder.mutation<void, SaveDiaryRequest>({
+      query: (data) => ({
+        data,
+        method: "POST",
+        url: "api/v3/save_diary",
+      }),
+      invalidatesTags: ["History"],
+    }),
+    getDiaries: builder.mutation<GetDiariesResponse, GetDiariesRequest>({
+      query: (data) => ({
+        data,
+        method: "POST",
+        url: "api/v3/diaries",
+      }),
     }),
     authenticate: builder.mutation<AuthorizationResponse, AuthRequest>({
       query: (body) => ({
@@ -294,6 +344,8 @@ export const {
   useCreateUserMutation,
   useCreateGptSessionMutation,
   useCheckFoodMutation,
+  useGetDiariesMutation,
+  useSaveDiaryMutation,
   useGetHistoryQuery,
   useGetProfileQuery,
   useRecoverPasswordMutation,

@@ -1,8 +1,9 @@
 import { CalendarDays } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProgressRing } from "../components/ProgressRing";
 import { TodayMeals } from "../components/TodayMeals";
 import { WeekCalendar } from "../components/WeekCalendar";
+import { useGetDiariesMutation } from "../api/baseApi";
 
 const macros = [
   { label: "Белки", value: 84, total: 84, color: "#ff5a72" },
@@ -28,8 +29,19 @@ const MACRO_INDICATOR_ACTIVE_WIDTH =
   MACRO_INDICATOR_GAP * (VISIBLE_MACROS - 1);
 const MACRO_DRAG_THRESHOLD = 16;
 
+function getTodayDate() {
+  const today = new Date();
+  return [
+    today.getDate().toString().padStart(2, "0"),
+    (today.getMonth() + 1).toString().padStart(2, "0"),
+    today.getFullYear(),
+  ].join("-");
+}
+
 export function HomePage() {
   const [firstVisibleMacro, setFirstVisibleMacro] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(getTodayDate);
+  const [getDiaries, { data: diaries }] = useGetDiariesMutation();
   const macroDrag = useRef<{
     pointerId: number;
     scrollLeft: number;
@@ -45,6 +57,10 @@ export function HomePage() {
     );
   };
 
+  useEffect(() => {
+    void getDiaries({ date: selectedDate });
+  }, [getDiaries, selectedDate]);
+
   return (
     <div className="mx-auto flex h-[100dvh] w-full flex-col overflow-auto px-4 pt-3 pb-[92px]">
       <header className="flex items-center justify-between">
@@ -56,7 +72,12 @@ export function HomePage() {
         </div>
       </header>
 
-      <WeekCalendar />
+      <WeekCalendar
+        onDateSelect={(date) => {
+          setSelectedDate(date);
+        }}
+        selectedDate={selectedDate}
+      />
 
       <section className="mt-3 rounded-[18px] bg-[var(--app-surface)] p-3.5">
         <div className="flex items-stretch justify-between gap-4">
@@ -211,7 +232,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <TodayMeals fallbackMeals={[]} />
+      <TodayMeals meals={diaries?.data ?? []} selectedDate={selectedDate} />
     </div>
   );
 }

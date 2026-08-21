@@ -1,6 +1,9 @@
 import { Apple, Scale, Utensils, type LucideIcon } from "lucide-react";
 import { useState } from "react";
-import { type FoodHistoryIngredient, useGetHistoryQuery } from "../api/baseApi";
+import {
+  type DiaryDish,
+  type FoodHistoryIngredient,
+} from "../api/baseApi";
 import { getFoodStats, type FoodStat } from "../utils/foodStats";
 import { ProfileSettingCard } from "./ProfileSettingCard";
 
@@ -17,7 +20,19 @@ export type TodayMeal = {
   weight: number | string;
 };
 
-type TodayMealsProps = { fallbackMeals: TodayMeal[] };
+type TodayMealsProps = {
+  meals: DiaryDish[];
+  selectedDate: string;
+};
+
+function getTodayDate() {
+  const today = new Date();
+  return [
+    today.getDate().toString().padStart(2, "0"),
+    (today.getMonth() + 1).toString().padStart(2, "0"),
+    today.getFullYear(),
+  ].join("-");
+}
 
 function getFoodPhotoUrl(pathToPhoto: string | null) {
   if (!pathToPhoto) return null;
@@ -44,31 +59,31 @@ function StatsGrid({ stats }: { stats: MealStat[] }) {
   );
 }
 
-export function TodayMeals({ fallbackMeals }: TodayMealsProps) {
-  const { data: history } = useGetHistoryQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+export function TodayMeals({
+  meals: diaryMeals,
+  selectedDate,
+}: TodayMealsProps) {
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
   const [expandedIngredient, setExpandedIngredient] = useState<string | null>(
     null,
   );
-  const meals: TodayMeal[] = history
-    ? history.data.map((meal) => ({
-        description: meal.datetime,
+  const meals: TodayMeal[] = diaryMeals.map((meal) => ({
+        description: meal.created_at,
         icon: Apple,
-        id: meal.history_id,
+        id: meal.dish_id,
         ingredients: meal.ingredients,
         photoUrl: getFoodPhotoUrl(meal.path_to_photo),
         stats: getFoodStats(meal),
         title: meal.dish_name,
         weight: meal.total_weight,
-      }))
-    : fallbackMeals;
+      }));
 
   return (
     <section aria-label="Блюда за сегодня" className="mt-5">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-[15px] font-extrabold">Сегодня</h2>
+        <h2 className="text-[15px] font-extrabold">
+          {selectedDate === getTodayDate() ? "Сегодня" : selectedDate}
+        </h2>
         <span className="text-[11px] text-[var(--app-text-subtle)]">
           {meals.length} блюда
         </span>

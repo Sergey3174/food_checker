@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/AuthButton";
 import { ProfileSettingCard } from "../components/ProfileSettingCard";
 import { useGptSse } from "../hooks/useGptSse";
-import { useCheckFoodMutation } from "../api/baseApi";
+import { useCheckFoodMutation, useSaveDiaryMutation } from "../api/baseApi";
 import { getFoodStats } from "../utils/foodStats";
 
 type CheckFoodResult = {
@@ -120,11 +120,13 @@ export function ScanPage() {
   const navigate = useNavigate();
   const { lastMessage, sessionId } = useGptSse("CheckFoodResult");
   const [checkFood, { isLoading: isCheckingFood }] = useCheckFoodMutation();
+  const [saveDiary, { isLoading: isSavingDiary }] = useSaveDiaryMutation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isSent, setIsSent] = useState(false);
   const [checkFoodResult, setCheckFoodResult] =
     useState<CheckFoodResult | null>(null);
   const [checkFoodError, setCheckFoodError] = useState<string | null>(null);
+  const [saveDiaryError, setSaveDiaryError] = useState<string | null>(null);
   const [isAwaitingResult, setIsAwaitingResult] = useState(false);
   const [expandedIngredient, setExpandedIngredient] = useState<string | null>(
     null,
@@ -227,9 +229,28 @@ export function ScanPage() {
 
   function handleRescan() {
     setCheckFoodError(null);
+    setSaveDiaryError(null);
     setCheckFoodResult(null);
     setExpandedIngredient(null);
     setIsSent(false);
+  }
+
+  async function handleSaveDiary() {
+    if (!foodData || !checkFoodResult?.history_id) return;
+
+    setSaveDiaryError(null);
+    try {
+      await saveDiary({
+        timezone: 0,
+        history_id: Number(checkFoodResult.history_id),
+        insulin: "1",
+        glucose_before: "1",
+        blood_pressure: "1",
+        activity_lvl: 0,
+      }).unwrap();
+    } catch {
+      setSaveDiaryError("Не удалось сохранить запись в дневник.");
+    }
   }
 
   const foodData = checkFoodResult?.data;
@@ -417,7 +438,20 @@ export function ScanPage() {
             )}
           </div>
 
-          <AuthButton className="mt-4 h-11">Сохранить в дневник</AuthButton>
+          {foodData && checkFoodResult?.history_id && (
+            <AuthButton
+              className="mt-4 h-11"
+              disabled={isSavingDiary}
+              onClick={() => void handleSaveDiary()}
+            >
+              {isSavingDiary ? "Сохраняем..." : "Сохранить в дневник"}
+            </AuthButton>
+          )}
+          {saveDiaryError && (
+            <p className="mt-2 text-center text-[11px] text-red-200">
+              {saveDiaryError}
+            </p>
+          )}
           <AuthButton className="mt-2.5 h-11" onClick={handleRescan}>
             Сканировать снова
           </AuthButton>
