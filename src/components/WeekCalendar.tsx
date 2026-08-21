@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 const DAYS_IN_WEEK = 7;
 const OBSERVER_THRESHOLD = 0.6;
@@ -68,7 +68,7 @@ export function WeekCalendar({
     });
   }, [selectedDate, weekOffset]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     isRepositioning.current = true;
     setWeekOffset(0);
   }, [selectedDate]);
@@ -85,7 +85,7 @@ export function WeekCalendar({
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [weekOffset]);
+  }, [selectedDate, weekOffset]);
 
   useEffect(() => {
     const root = scrollRef.current;
@@ -119,7 +119,7 @@ export function WeekCalendar({
     observer.observe(previousWeekMarker);
     observer.observe(nextWeekMarker);
     return () => observer.disconnect();
-  }, [weekOffset]);
+  }, [selectedDate, weekOffset]);
 
   function changeWeek(direction: -1 | 1) {
     isRepositioning.current = true;

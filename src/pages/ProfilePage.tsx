@@ -9,6 +9,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { AuthButton } from "../components/AuthButton";
 import { ChangePasswordForm } from "../components/ChangePasswordForm";
 import { LanguageSettings } from "../components/LanguageSettings";
@@ -19,7 +20,8 @@ import {
   ProfileSettingCardHeader,
 } from "../components/ProfileSettingCard";
 import { SubscriptionStatus } from "../components/SubscriptionStatus";
-import { useGetProfileQuery } from "../api/baseApi";
+import { baseApi, useGetProfileQuery } from "../api/baseApi";
+import { persistAuth, setIsAuthenticated } from "../store/authSlice";
 
 const settings = [
   {
@@ -57,6 +59,7 @@ const settings = [
 export function ProfilePage() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const dispatch = useDispatch();
   const { data: profile } = useGetProfileQuery();
   const uid = profile?.identity ?? "—";
   const fullName =
@@ -71,6 +74,13 @@ export function ProfilePage() {
     await navigator.clipboard?.writeText(uid);
     setIsCopied(true);
     window.setTimeout(() => setIsCopied(false), 1600);
+  };
+
+  const handleLogout = () => {
+    persistAuth(null);
+    window.sessionStorage.removeItem("sugar.gpt-session-id");
+    dispatch(baseApi.util.resetApiState());
+    dispatch(setIsAuthenticated(false));
   };
 
   return (
@@ -143,7 +153,10 @@ export function ProfilePage() {
           );
         })}
         <section className="mt-auto pt-5 flex flex-col gap-2 pb-3">
-          <AuthButton className="h-11 rounded-[14px] hover:bg-[var(--app-success)]">
+          <AuthButton
+            className="h-11 rounded-[14px] hover:bg-[var(--app-success)]"
+            onClick={handleLogout}
+          >
             <LogOut size={17} />
             Выйти из аккаунта
           </AuthButton>

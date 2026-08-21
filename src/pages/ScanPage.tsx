@@ -248,6 +248,7 @@ export function ScanPage() {
         blood_pressure: "1",
         activity_lvl: 0,
       }).unwrap();
+      navigate("/home");
     } catch {
       setSaveDiaryError("Не удалось сохранить запись в дневник.");
     }

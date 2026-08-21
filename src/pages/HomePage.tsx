@@ -25,16 +25,66 @@ function getNumericValue(value: string | null | undefined) {
 
 function getMacros(summary?: DiaryDish) {
   return [
-    { label: "Белки", value: getNumericValue(summary?.proteins), total: DAILY_NORMS.proteins, color: "#ff5a72" },
-    { label: "Углеводы", value: getNumericValue(summary?.carbohydrates), total: DAILY_NORMS.carbohydrates, color: "#f7b331" },
-    { label: "Жиры", value: getNumericValue(summary?.fats), total: DAILY_NORMS.fats, color: "#4bb9ff" },
-    { label: "Хлебные единицы", value: getNumericValue(summary?.bread_units), total: DAILY_NORMS.breadUnits, color: "#72FF5A" },
-    { label: "Сахар", value: getNumericValue(summary?.sugars), total: DAILY_NORMS.sugar, color: "#e879f9" },
-    { label: "Гликемический индекс", value: getNumericValue(summary?.glycemic_index), total: DAILY_NORMS.glycemicIndex, color: "#60a5fa" },
-    { label: "БЖЕ", value: getNumericValue(summary?.bje_units), total: DAILY_NORMS.bje, color: "#a78bfa" },
-    { label: "Инсулин", value: getNumericValue(summary?.insulin), total: DAILY_NORMS.insulin, color: "#fb7185" },
-    { label: "Глюкоза до", value: getNumericValue(summary?.glucose_before), total: DAILY_NORMS.glucose, color: "#38bdf8" },
-    { label: "Глюкоза после", value: getNumericValue(summary?.glucose_after), total: DAILY_NORMS.glucose, color: "#2dd4bf" },
+    {
+      label: "Белки",
+      value: getNumericValue(summary?.proteins),
+      total: DAILY_NORMS.proteins,
+      color: "#ff5a72",
+    },
+    {
+      label: "Углеводы",
+      value: getNumericValue(summary?.carbohydrates),
+      total: DAILY_NORMS.carbohydrates,
+      color: "#f7b331",
+    },
+    {
+      label: "Жиры",
+      value: getNumericValue(summary?.fats),
+      total: DAILY_NORMS.fats,
+      color: "#4bb9ff",
+    },
+    {
+      label: "Хлебные единицы",
+      value: getNumericValue(summary?.bread_units),
+      total: DAILY_NORMS.breadUnits,
+      color: "#72FF5A",
+    },
+    {
+      label: "Сахар",
+      value: getNumericValue(summary?.sugars),
+      total: DAILY_NORMS.sugar,
+      color: "#e879f9",
+    },
+    {
+      label: "Гликемический индекс",
+      value: getNumericValue(summary?.glycemic_index),
+      total: DAILY_NORMS.glycemicIndex,
+      color: "#60a5fa",
+    },
+    {
+      label: "БЖЕ",
+      value: getNumericValue(summary?.bje_units),
+      total: DAILY_NORMS.bje,
+      color: "#a78bfa",
+    },
+    {
+      label: "Инсулин",
+      value: getNumericValue(summary?.insulin),
+      total: DAILY_NORMS.insulin,
+      color: "#fb7185",
+    },
+    {
+      label: "Глюкоза до",
+      value: getNumericValue(summary?.glucose_before),
+      total: DAILY_NORMS.glucose,
+      color: "#38bdf8",
+    },
+    {
+      label: "Глюкоза после",
+      value: getNumericValue(summary?.glucose_after),
+      total: DAILY_NORMS.glucose,
+      color: "#2dd4bf",
+    },
   ];
 }
 
@@ -154,9 +204,7 @@ export function HomePage() {
                   <i className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--app-success)]" />
                   СЪЕДЕНО{" "}
                 </div>
-                <b className=" text-[11px]">
-                  {consumedCalories}
-                </b>
+                <b className=" text-[11px]">{consumedCalories}</b>
               </span>
               <span className="flex flex-col items-center  gap-1">
                 <div className="leading-none flex items-center gap-1">
