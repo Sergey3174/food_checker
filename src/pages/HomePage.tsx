@@ -3,22 +3,40 @@ import { useEffect, useRef, useState } from "react";
 import { ProgressRing } from "../components/ProgressRing";
 import { TodayMeals } from "../components/TodayMeals";
 import { WeekCalendar } from "../components/WeekCalendar";
-import { useGetDiariesMutation } from "../api/baseApi";
+import { type DiaryDish, useGetDiariesMutation } from "../api/baseApi";
 
-const macros = [
-  { label: "Белки", value: 84, total: 84, color: "#ff5a72" },
-  { label: "Углеводы", value: 97, total: 280, color: "#f7b331" },
-  { label: "Жиры", value: 9, total: 84, color: "#4bb9ff" },
-  { label: "Хлебные единицы", value: 52, total: 102, color: "#72FF5A" },
-  // { label: "Вес", value: 780, total: 1800, color: "#94a3b8" },
-  { label: "Сахар", value: 31, total: 50, color: "#e879f9" },
-  { label: "Гликемический индекс", value: 52, total: 100, color: "#60a5fa" },
-  { label: "БЖЕ", value: 7, total: 20, color: "#a78bfa" },
-  { label: "Инсулин", value: 8, total: 24, color: "#fb7185" },
-  { label: "Глюкоза до", value: 5.2, total: 10, color: "#38bdf8" },
-  { label: "Глюкоза после", value: 6.8, total: 10, color: "#2dd4bf" },
-  // { label: "Физическая активность", value: 35, total: 60, color: "#facc15" },
-];
+const DAILY_CALORIES_NORM = 2000;
+const DAILY_NORMS = {
+  bje: 20,
+  breadUnits: 25,
+  carbohydrates: 250,
+  fats: 70,
+  glycemicIndex: 200,
+  insulin: 24,
+  proteins: 75,
+  sugar: 50,
+  glucose: 10,
+};
+
+function getNumericValue(value: string | null | undefined) {
+  const parsed = Number.parseFloat(value ?? "0");
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getMacros(summary?: DiaryDish) {
+  return [
+    { label: "Белки", value: getNumericValue(summary?.proteins), total: DAILY_NORMS.proteins, color: "#ff5a72" },
+    { label: "Углеводы", value: getNumericValue(summary?.carbohydrates), total: DAILY_NORMS.carbohydrates, color: "#f7b331" },
+    { label: "Жиры", value: getNumericValue(summary?.fats), total: DAILY_NORMS.fats, color: "#4bb9ff" },
+    { label: "Хлебные единицы", value: getNumericValue(summary?.bread_units), total: DAILY_NORMS.breadUnits, color: "#72FF5A" },
+    { label: "Сахар", value: getNumericValue(summary?.sugars), total: DAILY_NORMS.sugar, color: "#e879f9" },
+    { label: "Гликемический индекс", value: getNumericValue(summary?.glycemic_index), total: DAILY_NORMS.glycemicIndex, color: "#60a5fa" },
+    { label: "БЖЕ", value: getNumericValue(summary?.bje_units), total: DAILY_NORMS.bje, color: "#a78bfa" },
+    { label: "Инсулин", value: getNumericValue(summary?.insulin), total: DAILY_NORMS.insulin, color: "#fb7185" },
+    { label: "Глюкоза до", value: getNumericValue(summary?.glucose_before), total: DAILY_NORMS.glucose, color: "#38bdf8" },
+    { label: "Глюкоза после", value: getNumericValue(summary?.glucose_after), total: DAILY_NORMS.glucose, color: "#2dd4bf" },
+  ];
+}
 
 const VISIBLE_MACROS = 3;
 const MACRO_INDICATOR_DOT_SIZE = 8;
@@ -38,15 +56,26 @@ function getTodayDate() {
   ].join("-");
 }
 
+function toPickerDate(date: string) {
+  return date.split("-").reverse().join("-");
+}
+
 export function HomePage() {
   const [firstVisibleMacro, setFirstVisibleMacro] = useState(0);
   const [selectedDate, setSelectedDate] = useState(getTodayDate);
   const [getDiaries, { data: diaries }] = useGetDiariesMutation();
+  const summary = diaries?.summary;
+  const consumedCalories = getNumericValue(summary?.calories);
+  const caloriesPercent = Math.round(
+    (consumedCalories / DAILY_CALORIES_NORM) * 100,
+  );
+  const macros = getMacros(summary);
   const macroDrag = useRef<{
     pointerId: number;
     scrollLeft: number;
     startX: number;
   } | null>(null);
+  const datePickerRef = useRef<HTMLInputElement>(null);
 
   const handleMacrosScroll = (scrollLeft: number, step: number) => {
     setFirstVisibleMacro(
@@ -67,9 +96,34 @@ export function HomePage() {
         <h1 className="text-[18px] font-extrabold tracking-tight">
           Food детектор
         </h1>
-        <div className="flex items-center gap-5 text-[var(--app-text-muted)]">
+        <button
+          aria-label="Выбрать дату"
+          className="grid h-9 w-9 place-items-center text-[var(--app-text-muted)]"
+          onClick={() => {
+            const picker = datePickerRef.current;
+            if (!picker) return;
+
+            try {
+              picker.showPicker();
+            } catch {
+              picker.click();
+            }
+          }}
+          type="button"
+        >
           <CalendarDays size={18} />
-        </div>
+        </button>
+        <input
+          className="absolute h-px w-px opacity-0"
+          max={toPickerDate(getTodayDate())}
+          onChange={(event) => {
+            if (!event.target.value) return;
+            setSelectedDate(event.target.value.split("-").reverse().join("-"));
+          }}
+          ref={datePickerRef}
+          type="date"
+          value={toPickerDate(selectedDate)}
+        />
       </header>
 
       <WeekCalendar
@@ -87,7 +141,7 @@ export function HomePage() {
                 Осталось калорий
               </p> */}
               <p className="mt-1 text-[29px] font-extrabold leading-none">
-                1904
+                {consumedCalories}
                 <span className="ml-1 text-[12px] font-medium text-[var(--app-text-muted)]">
                   ккал
                 </span>
@@ -100,7 +154,9 @@ export function HomePage() {
                   <i className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--app-success)]" />
                   СЪЕДЕНО{" "}
                 </div>
-                <b className=" text-[11px]">642</b>
+                <b className=" text-[11px]">
+                  {consumedCalories}
+                </b>
               </span>
               <span className="flex flex-col items-center  gap-1">
                 <div className="leading-none flex items-center gap-1">
@@ -113,9 +169,12 @@ export function HomePage() {
           </div>
 
           <div className="relative grid aspect-square w-[min(25vw,100px)] shrink-0 place-items-center">
-            <ProgressRing color="var(--app-success)" percent={25} />
+            <ProgressRing
+              color="var(--app-success)"
+              percent={caloriesPercent}
+            />
             <span className="relative z-10 grid h-9 w-9 place-items-center rounded-full bg-[var(--app-surface)] text-[14px] font-bold">
-              25%
+              {caloriesPercent}%
             </span>
           </div>
         </div>

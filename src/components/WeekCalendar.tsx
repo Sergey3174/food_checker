@@ -17,6 +17,11 @@ function formatDate(date: Date) {
   ].join("-");
 }
 
+function parseDate(date: string) {
+  const [day, month, year] = date.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function WeekCalendar({
   selectedDate,
   onDateSelect,
@@ -28,15 +33,16 @@ export function WeekCalendar({
   const isRepositioning = useRef(false);
   const days = useMemo(() => {
     const today = new Date();
+    const selected = parseDate(selectedDate);
     const todayStart = new Date(
       today.getFullYear(),
       today.getMonth(),
       today.getDate(),
     );
-    const monday = new Date(today);
+    const monday = new Date(selected);
     monday.setDate(
-      today.getDate() -
-        ((today.getDay() + 6) % 7) -
+      selected.getDate() -
+        ((selected.getDay() + 6) % 7) -
         DAYS_IN_WEEK +
         weekOffset * DAYS_IN_WEEK,
     );
@@ -60,7 +66,12 @@ export function WeekCalendar({
           .replace(".", ""),
       };
     });
-  }, [weekOffset]);
+  }, [selectedDate, weekOffset]);
+
+  useEffect(() => {
+    isRepositioning.current = true;
+    setWeekOffset(0);
+  }, [selectedDate]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
