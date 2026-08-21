@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ProgressRing } from "../components/ProgressRing";
 import { TodayMeals } from "../components/TodayMeals";
@@ -112,6 +112,7 @@ function toPickerDate(date: string) {
 
 export function HomePage() {
   const [firstVisibleMacro, setFirstVisibleMacro] = useState(0);
+  const [activityLevel, setActivityLevel] = useState("Средняя");
   const [selectedDate, setSelectedDate] = useState(getTodayDate);
   const [getDiaries, { data: diaries }] = useGetDiariesMutation();
   const summary = diaries?.summary;
@@ -197,22 +198,26 @@ export function HomePage() {
                 </span>
               </p>
             </div>
-            <div className="mt-4 flex gap-5 text-[9px]">
-              <span className="flex flex-col gap-1 items-center">
-                <div className="leading-none flex items-center gap-1">
-                  {" "}
-                  <i className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--app-success)]" />
-                  СЪЕДЕНО{" "}
-                </div>
-                <b className=" text-[11px]">{consumedCalories}</b>
-              </span>
-              <span className="flex flex-col items-center  gap-1">
-                <div className="leading-none flex items-center gap-1">
-                  <i className=" inline-block h-1.5 w-1.5 rounded-full bg-[#f7b331] " />
-                  СОЖЖЕНО
-                </div>
-                <b className=" text-[11px]">0</b>
-              </span>
+            <div className="mt-4">
+              <label className="block text-[9px] font-bold uppercase text-[var(--app-text-muted)]">
+                Активность
+              </label>
+              <div className="relative mt-1">
+                <select
+                  className="h-8 w-full appearance-none rounded-lg border border-[var(--app-border)]/30 bg-[var(--app-surface-raised)] px-2.5 pr-8 text-[11px] font-bold text-[var(--app-text)] outline-none"
+                  onChange={(event) => setActivityLevel(event.target.value)}
+                  value={activityLevel}
+                >
+                  <option value="Низкая">Низкая</option>
+                  <option value="Средняя">Средняя</option>
+                  <option value="Высокая">Высокая</option>
+                </select>
+                <ChevronDown
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[var(--app-text-muted)]"
+                  size={14}
+                />
+              </div>
             </div>
           </div>
 
